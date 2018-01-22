@@ -5,6 +5,7 @@
 ## vue-cli ##
 
 使用vue-cli脚手架搭建环境
-1. **npm init** 初始化生成package.json文件
-2. 
+1. 先使用**npm install -g vue-cli**安装全局vue-cli
+
+2. 使用**vue init webpack 你的项目名**基于webpack构建项目
 
