@@ -8,4 +8,16 @@
 1. 先使用**npm install -g vue-cli**安装全局vue-cli
 
 2. 使用**vue init webpack 你的项目名**基于webpack构建项目
+    >使用该命令，系统会进行安装步骤，可以直接回车不用管。  
+    **Use ESLint to lint your code**是官网默认推荐使用ESLint语法检测。  
+    **Set up unit tests**是否安装单元测试。  
+    **Setup e2e tests with Nightwatch**是否安装e2e测试
+
+3. 使用**npm install**安装模块
+    
+
+    
+
+
+
 
