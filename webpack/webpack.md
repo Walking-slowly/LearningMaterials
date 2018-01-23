@@ -26,9 +26,28 @@ config|项目开发环境配置相关代码
 node_modules|项目依赖相关模块 
 src|源代码目录 
 static|静态资源文件目录  
+dist|打包后生成的目录  
 
+## ESlint ##
+[ESlint](https://eslint.org/)是一种严格模式开发，在前面安装脚手架时，官网就推荐使用**ESlint**开发，如果不习惯使用**ESlint**，可以在**build**目录下的webpack.base.config文件里注释掉这段代码：
+```
+    ...(config.dev.useEslint ? [createLintingRule()] : []),
+```
 
-    
+## scss ##
+在实际开发中，，不管是使用scss，还是less都会碰到需要引用全局样式。如果在入口文件里面引入全局scss或less，实现不了效果，会编译不了scss和less文件，在每个组件里面引入的话太过麻烦。那就只能从webpack的配置中入手，想要引入全局scss，就需要在**build**目录下的utils文件里面对应的scss设置：
+```
+    scss: generateLoaders('sass').concat(
+      {
+        loader: 'sass-resources-loader',
+        options: {
+          resources: path.resolve(__dirname, 实际项目路径)
+        }
+      }
+    ),
+```
+在实际项目路径写入需要引入的全局scss就可以使用了。
+
 
     
 
