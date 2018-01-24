@@ -1,4 +1,4 @@
-# webpack #
+# <center>webpack</cebter> #
 
 [webpack](https://webpack.js.org)是一个前端资源打包工具，你可以选择将css，scss，less，img全部打包成js文件。现在前端开发都是使用webpack配合框架来构建项目；初次使用webpack是配合前端框架[vue](https://cn.vuejs.org),使用vue-cli脚手架搭建的项目，先说下使用vue-cli遇到的问题。
 
@@ -50,13 +50,11 @@ dist|打包后生成的目录
       }
     ),
 ```
-在实际项目路径写入需要引入的全局scss就可以使用了。
+在实际项目路径写入需要引入的全局scss就可以使用了。  
 
-[^1]在使用**npm run build**打包之后，在**dist**目录下使用浏览器打开会显示空白，这是因为路径错误，只需要在**config**目录下的index文件的build的配置下更改为:
-```
-  assetsPublicPath: './',
-```  
-[^1]:这里是脚本  
+>__注意：__ 在使用**npm run build**打包之后，在**dist**目录下使用浏览器打开会显示空白，这是因为路径错误，只需要在**config**目录下的index文件的build的配置下更改为:
+
+
 
 ## 手动搭建 ##
 有时候可能觉得vue-cli脚手架搭建的项目需要安装的插件太多，太过笨重，有些插件可能用不到或者不需要，而脚手架里面的webpack配置有些太过复杂看不懂，这时候就需要手动去搭建。
@@ -73,9 +71,11 @@ dist|打包后生成的目录
 引入全局的scss文件在手动搭建的webpack配置里，需要在vue-loader后面配置：
 <img src="./img/微信图片_20180124163934.png"/>
 
-[^2]2018年1月24日  
+ <p align="right">2018年1月24日</p>  
+
+
  
-[^2]:是脚本
+
 
 
 
