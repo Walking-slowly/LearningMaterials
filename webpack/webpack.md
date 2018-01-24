@@ -34,13 +34,13 @@ dist|打包后生成的目录
 
 ### 使用ESlint ###
 [ESlint](https://eslint.org/)是一种严格模式开发，在前面安装脚手架时，官网就推荐使用**ESlint**开发，如果不习惯使用**ESlint**，可以在**build**目录下的webpack.base.config文件里注释掉这段代码：
-```
+```js
     ...(config.dev.useEslint ? [createLintingRule()] : []),
 ```
 
 ### 全局scss ###
 在实际开发中，，不管是使用scss，还是less都会碰到需要引用全局样式。如果在入口文件里面引入全局scss或less，实现不了效果，会编译不了scss和less文件，在每个组件里面引入的话太过麻烦。那就只能从webpack的配置中入手，想要引入全局scss，就需要在**build**目录下的utils文件里面对应的scss设置：
-```
+```js
     scss: generateLoaders('sass').concat(
       {
         loader: 'sass-resources-loader',
@@ -69,7 +69,55 @@ dist|打包后生成的目录
 
 ### 全局scss ###
 引入全局的scss文件在手动搭建的webpack配置里，需要在vue-loader后面配置：
-<img src="./img/微信图片_20180124163934.png"/>
+```js
+  {
+				test : /\.vue$/,
+				loader : 'vue-loader',
+				options : {
+					loaders : {
+						
+						//编译scss文件
+						scss : [
+							'vue-style-loader',
+							'css-loader',
+							'sass-loader',
+							{
+								loader: 'sass-resources-loader',
+								options: {
+									// 引入全局scss，以实际项目目录为准
+									resources: filePath.DEV_PATH + '/common/style.scss'
+								}
+							}
+						],
+
+						//编译sass文件
+						sass : [
+							'vue-style-loader',
+							'css-loader',
+							'sass-loader?indentedSyntax=1',
+							{
+								loader: 'sass-resources-loader',
+								options: {
+									// 需更改为项目中实际scss文件路径
+									resources: filePath.DEV_PATH + '/common/style.scss'
+								}
+							}
+						]
+					
+					}
+				}
+			}
+```
+__注意：__使用vue2.0以上需要加上该项配置：
+```js
+  //对vue模块名的简写和地址重定向
+	// vue2.0加上这一句
+	resolve: {
+		alias: {
+			vue: 'vue/dist/vue.js'
+		}
+	}
+```
 
  <p align="right">2018年1月24日</p>  
 
