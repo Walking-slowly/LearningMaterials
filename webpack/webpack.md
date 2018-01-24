@@ -53,7 +53,9 @@ dist|打包后生成的目录
 在实际项目路径写入需要引入的全局scss就可以使用了。  
 
 >__注意：__ 在使用**npm run build**打包之后，在**dist**目录下使用浏览器打开会显示空白，这是因为路径错误，只需要在**config**目录下的index文件的build的配置下更改为:
-
+```js
+  assetsPublicPath: './',
+```  
 
 
 ## 手动搭建 ##
@@ -66,6 +68,20 @@ dist|打包后生成的目录
 
 3. 然后就是**npm install**安装所需的插件，可以在一边写配置，一边安装所需插件**npm install 插件名 --save-dev**，也可以写一边写配置，一边把需要安装的插件名写入**package.json**文件下面的devDependencies配置里，配置写完后使用**npm install**一键安装。  
     >__注意：__ 如果是单独一个一个的安装，需统一使用npm或cnpm安装，以免出现不必要的报错。
+
+### webpack.config ###
+在webpack配置中有几个配置项：  
+
+属性|作用|类型
+-|-|-
+entry|入口文件配置|String/Object
+output|输出文件配置|Object
+module.loaders|编译loader配置|Object
+plugins|所需插件配置|Array
+devServer|监听配置|Object
+devtool|调试配置|String
+
+
 
 ### 全局scss ###
 引入全局的scss文件在手动搭建的webpack配置里，需要在vue-loader后面配置：
@@ -107,7 +123,7 @@ dist|打包后生成的目录
 					}
 				}
 			}
-```
+```  
 __注意：__ 使用vue2.0以上需要加上该项配置：
 ```js
         //对vue模块名的简写和地址重定向  
