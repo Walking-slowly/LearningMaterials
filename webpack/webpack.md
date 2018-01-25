@@ -76,7 +76,7 @@ dist|打包后生成的目录
 -|-|-
 entry|入口文件配置|String/Object
 output|输出文件配置|Object
-module.loaders|编译loader配置|Object
+module|编译loader配置|Object
 plugins|所需插件配置|Array
 devServer|监听配置|Object
 devtool|调试配置|String
