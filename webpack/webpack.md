@@ -134,6 +134,16 @@ __注意：__ 使用vue2.0以上需要加上该项配置：
 		}
 	}
 ```
+### 开发常用插件 ###
+插件|用法|用途
+-|-|-
+ProvidePlugin|```new webpack.ProvidePlugin({$: 'jquery',})```|当$出现时，自动加载jquery模块
+ExtractTextPlugin|```new ExtractTextPlugin(PRODUCTION ? '[name]-[chunkhash].css' : '[name].css')```|用于分离css文件
+HtmlWebpackPlugin|```new HtmlWebpackPlugin({template: './src/index.html'})```|生成的html文件根据该文件生成，重构html入口文件
+UglifyJsPlugin|```new webpack.optimize.UglifyJsPlugin()```|用于压缩js文件
+OccurrenceOrderPlugin|```new webpack.optimize.OccurrenceOrderPlugin(true)```|根据模块使用次数给模块分配ids，常用的模块ids会分配更短的id，减少文件大小
+CommonsChunkPlugin|```new webpack.optimize.CommonsChunkPlugin({names: ['vendor']})```|把全局通用的文件合并为单独的文件，长期不会修改，从而可以从缓存中取，便于优化
+
 
  <p align="right">2018年1月24日</p>  
 
