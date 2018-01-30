@@ -9,10 +9,6 @@ var Config = {
     html: {  
         src: SRC_DIR + '*.html',  
         dist: DIST_DIR  
-    },
-    json: {  
-        src: SRC_DIR + '*.json',  
-        dist: DIST_DIR  
     },   
     assets: {  
         src: SRC_DIR + 'assets/**/*',            // assets目录：./src/assets  
