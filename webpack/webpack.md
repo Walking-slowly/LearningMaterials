@@ -143,6 +143,8 @@ HtmlWebpackPlugin|```new HtmlWebpackPlugin({template: './src/index.html'})```|�
 UglifyJsPlugin|```new webpack.optimize.UglifyJsPlugin()```|用于压缩js文件
 OccurrenceOrderPlugin|```new webpack.optimize.OccurrenceOrderPlugin(true)```|根据模块使用次数给模块分配ids，常用的模块ids会分配更短的id，减少文件大小
 CommonsChunkPlugin|```new webpack.optimize.CommonsChunkPlugin({names: ['vendor']})```|把全局通用的文件合并为单独的文件，长期不会修改，从而可以从缓存中取，便于优化
+NoErrorsPlugin|```new webpack.NoErrorsPlugin()```|跳过编译时出错的代码并记录，使编译后运行时的包不会发生错误
+
 
 
  <p align="right">2018年1月24日</p>  
