@@ -67,6 +67,11 @@ module.exports = {
 				test : /\.js$/, //匹配js文件
 				loader : 'babel-loader', //相关loder配置
 				exclude: /(node_modules)/ //排除nodemodules文件夹
+			},
+			//编译图片
+			{
+				test : /\.(png|jsp|gif|jpg)/, //匹配图片
+				loader : 'url-loader'
 			}
 
 			

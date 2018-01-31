@@ -32,42 +32,45 @@ module.exports = {
 			{
 				test : /\.vue$/,
 				loader : 'vue-loader',
+				exclude: /(node_modules)/, //排除nodemodules文件夹
 				options : {
 					loaders : {
 						
-						//编译scss文件
-						scss : [
-							'vue-style-loader',
-							'css-loader',
-							'sass-loader',
-							{
-								loader: 'sass-resources-loader',
-								options: {
-									// 引入全局scss，以实际项目目录为准
-									resources : filePath.DEV_PATH + '/common/style.scss'
-								}		
-							}	
-						],
+						//编译scss文件 分离样式
+						scss : 	ExtractTextPlugin.extract({
+									fallback: 'vue-style-loader',
+									use: [
+										{	loader: 'css-loader'},
+										{	loader:'sass-loader'},
+										{	loader:'sass-resources-loader',
+											options: {
+												// 引入全局scss，以实际项目目录为准
+												resources : filePath.DEV_PATH + '/common/style.scss'
+											}
+										}
+									],
+									
+								}),	
+						
+							
+						
 
 						//编译sass文件
-						sass : [
-							'vue-style-loader',
-							'css-loader',
-							'sass-loader?indentedSyntax=1',
-							{
-								loader: 'sass-resources-loader',
-								options: {
-									// 需更改为项目中实际scss文件路径
-									resources: filePath.DEV_PATH + '/common/style.scss'
-								}
-							}
-						],
+						sass : 	ExtractTextPlugin.extract({
+									fallback: 'vue-style-loader',
+									use: [
+										{	loader: 'css-loader'},
+										{	loader:'sass-loader?indentedSyntax=1'},
+										{	loader:'sass-resources-loader',
+											options: {
+												// 引入全局scss，以实际项目目录为准
+												resources : filePath.DEV_PATH + '/common/style.scss'
+											}
+										}
+									],
+									
+								})
 
-						//提取样式文件
-						scss:ExtractTextPlugin.extract({
-							fallback: 'vue-style-loader',
-							use: ['css-loader','sass-loader']
-						})
 					}
 				}
 				
@@ -77,6 +80,12 @@ module.exports = {
 				test : /\.js$/, //匹配js文件
 				loader : 'babel-loader', //相关loder配置
 				exclude: /(node_modules)/ //排除nodemodules文件夹
+			},
+			//编译图片
+			{
+				test : /\.(png|jsp|gif|jpg)/, //匹配图片
+				loader : 'url-loader',
+				
 			}
 		]
 	},
@@ -87,7 +96,7 @@ module.exports = {
 			vue: 'vue/dist/vue.js'
 		},
 	},
-  
+	
     //插件数组
     plugins : [
         
@@ -114,7 +123,7 @@ module.exports = {
 		}),
 
 		//引入全局模块
-        new webpack.ProvidePlugin({  
+        new webpack.ProvidePlugin({
             $: 'jquery'
 		}),
 
@@ -138,7 +147,7 @@ module.exports = {
 		//分离样式文件
 		new ExtractTextPlugin({
 			filename : '../css/[name]-[hash:6].css', //默认js目录
-			allChunks : true
+			allChunks : true //所以的样式合并成一个文件
 		})
 
 

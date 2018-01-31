@@ -124,6 +124,24 @@ devtool|调试配置|String
 				}
 			}
 ```  
+如果使用了全局scss，又需要提取样式文件，只需修改上面配置scss的地方即可：
+```js
+	//编译scss文件 分离样式
+						scss : 	ExtractTextPlugin.extract({
+									fallback: 'vue-style-loader',
+									use: [
+										{	loader: 'css-loader'},
+										{	loader:'sass-loader'},
+										{	loader:'sass-resources-loader',
+											options: {
+												// 引入全局scss，以实际项目目录为准
+												resources : filePath.DEV_PATH + '/common/style.scss'
+											}
+										}
+									],
+									
+								}),	
+```
 __注意：__ 使用vue2.0以上需要加上该项配置：
 ```js
         //对vue模块名的简写和地址重定向  
@@ -143,7 +161,7 @@ HtmlWebpackPlugin|```new HtmlWebpackPlugin({template: './src/index.html'})```|�
 UglifyJsPlugin|```new webpack.optimize.UglifyJsPlugin()```|用于压缩js文件
 OccurrenceOrderPlugin|```new webpack.optimize.OccurrenceOrderPlugin(true)```|根据模块使用次数给模块分配ids，常用的模块ids会分配更短的id，减少文件大小
 CommonsChunkPlugin|```new webpack.optimize.CommonsChunkPlugin({names: ['vendor']})```|把全局通用的文件合并为单独的文件，长期不会修改，从而可以从缓存中取，便于优化
-NoErrorsPlugin|```new webpack.NoErrorsPlugin()```|跳过编译时出错的代码并记录，使编译后运行时的包不会发生错误
+CleanWebpackPlugin|```new CleanWebpackPlugin([filePath.BUILD_PATH + '/js/*.js',filePath.BUILD_PATH + '/css/*.css'],//要删除的文件目录匹配root:filePath.ROOT_PATH,//根目录verbose:true, //将日志写入控制台dry:false //删除文件 'true'模拟删除（不会删除文件）}),```|删除上次打包的旧文件
 
 
 
