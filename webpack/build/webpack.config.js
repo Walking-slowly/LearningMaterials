@@ -70,7 +70,7 @@ module.exports = {
 			},
 			//编译图片
 			{
-				test : /\.(png|jsp|gif|jpg)/, //匹配图片
+				test : /\.(png|jsp|gif|jpg)$/, //匹配图片
 				loader : 'url-loader'
 			}
 
