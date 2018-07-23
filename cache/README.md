@@ -16,9 +16,20 @@
 ## 响应报文
   > 服务器返回的相关数据信息都在响应报文中体现，响应报文分为**状态行**，**响应头**，**响应正文**
 
-   响应头域 | 作用
+   响应头域 | 作用 
    -| -
   Expires | 缓存过期时间
   Cache-Contro | 相应缓存设置
-  
+
+  __注意：__ Cache-Contro会有兼容性，一般Expires和Cache-Contro都会设置。
+
+  ## Express
+  > nodejs的express框架中就有缓存的中间件
+
+  ```js
+    app.use(express.static(path.join(__dirname, '需要缓存的静态文件夹地址'),{
+        maxAge: '1y',  // 文件过期时间
+        expires: '1y', // 文件过期时间
+    }))
+  ```
   
