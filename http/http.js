@@ -1,12 +1,10 @@
 class http {
     constructor ({
         url, 
-        contentType = 'application/x-www-form-urlencoded',
-        timeOut = '1000'
+        contentType = 'application/x-www-form-urlencoded'
     }) {
         this.url = url
         this.contentType = contentType
-        this.timeOut = timeOut
     }
 
      /**
