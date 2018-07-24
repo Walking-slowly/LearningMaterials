@@ -8,5 +8,17 @@
 </head>
 <body>
     <script src="./http.js"></script>
+    <script>
+        axios.http({
+            url: 'http://127.0.0.1:12345/inss',
+            type: 'get'
+        })
+        .then((data) =>{
+            console.log(data)
+        })
+        .catch((error) =>{
+            console.log(error)
+        })
+    </script>
 </body>
 </html>
