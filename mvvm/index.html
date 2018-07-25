@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>mvvm</title>
+</head>
+<body>
+    <div id="app">
+        <p>{{sss}}</p>
+        <b v-on:click="abc">点击</b>
+    </div>
+    <script>
+        new Mvn({
+            el: '#app',
+            data: {
+                sss: '666'
+            },
+            methods:{
+                abc () {
+                    console.log(666)
+                }
+            }
+        })
+
+    </script>
+</body>
+</html>
