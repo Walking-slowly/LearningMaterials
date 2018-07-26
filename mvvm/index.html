@@ -8,20 +8,24 @@
 </head>
 <body>
     <div id="app">
+        <p v-sss="nb">{{bbb.aaa}}</p>
         <p>{{sss}}</p>
-        <b v-on:click="abc">点击</b>
+        <div>
+            <p v-sss="nb">
+                <i>{{aaa}}</i>
+            </p>
+        </div>
     </div>
+    <script src="./mvc.js"></script>
     <script>
-        new Mvn({
+        new Mvc({
             el: '#app',
             data: {
-                sss: '666'
-            },
-            methods:{
-                abc () {
-                    console.log(666)
+                sss: '666',
+                bbb: {
+                    aaa: 'sss'
                 }
-            }
+            },
         })
 
     </script>
