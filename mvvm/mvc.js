@@ -42,22 +42,43 @@ var Compile = /** @class */ (function () {
     // 将DOM拷贝到文档碎片
     Compile.prototype.clonefragment = function () {
         this.fragment.appendChild(this.ele);
-        this.compileText();
+        this.compileText(this.fragment);
     };
     // 在文档碎片中处理DOM文本
-    Compile.prototype.compileText = function () {
+    Compile.prototype.compileText = function (html) {
         var _this = this;
-        this.fragment.childNodes.forEach(function (node) {
-            var text = node.innerText, reg = /\{\{(.*)\}\}/g; //获取所有文本节点  文本规则
-            if (reg.test(text)) {
-                _this.replaceText(RegExp.$1, node);
+        //循环html找出 文本节点 和 元素节点
+        html.childNodes.forEach(function (node) {
+            var text = node.textContent, reg = /\{\{(.*?)\}\}/g; //获取所有文本节点  文本规则
+            if (node.nodeType === 3 && reg.test(text)) { // 去掉空文本
+                _this.replaceText(node, RegExp.$1.trim());
+            }
+            else if (node.nodeType === 1) {
+                _this.replaceCompile(node);
+            }
+            if (node.childNodes && node.childNodes.length > 0) {
+                _this.compileText(node);
             }
         });
     };
-    // 替换text为data中的数据
-    Compile.prototype.replaceText = function (text, node) {
-        console.log(text);
+    // 替换text
+    Compile.prototype.replaceText = function (node, reg) {
+        console.log('666', node, reg);
         // console.log(text.split('.').indexOf('()'))
+    };
+    // 指令编译
+    Compile.prototype.replaceCompile = function (node) {
+        var attrs = node.attributes;
+        Array.prototype.slice.call(attrs).forEach(function (attr) {
+            console.log(attr.name, attr.value);
+            // 规则 v-ssss  v-on:clicl
+            if (/[v\-]{2}/.test(attr.name)) {
+                console.log(attr.value);
+            }
+            // 规则 @click
+            else if (/[\@]/.test(attr.name)) {
+            }
+        });
     };
     return Compile;
 }());
