@@ -14,6 +14,7 @@
             <p v-sss="nb">
                 <i>{{aaa}}</i>
             </p>
+            <button @click="dianji">你好</button>
         </div>
     </div>
     <script src="./mvc.js"></script>
@@ -26,6 +27,11 @@
                     aaa: 'sss'
                 }
             },
+            methods: {
+                dianji () {
+                    console.log(777)
+                }
+            }
         })
 
     </script>
