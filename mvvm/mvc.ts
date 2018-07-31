@@ -34,18 +34,20 @@ class Observer {
 
     defineProprety (data: Object, key: string, val: any): any {
         new Observer(val).init() // 遍历子属性
-
+        let dep = new Dep()
         Object.defineProperty(
             data, // 对象
             key, // 属性名
             {
                 enumerable: true, // 可枚举属性 允许修改
-                get : function (): any{
+                get : function (): any{ // 属性被访问是触发
+                    console.log('get')
                     return val
                 },
                 set: function (newVal: any) {
+                    console.log('666',val, newVal)
                     val = newVal  // 当属性被修改时触发
-
+                    // dep.notify() // 通知订阅者
                 }
             } // 属性描述符 -- 存取描述符
         )
@@ -66,11 +68,11 @@ class Compile {
     }
 
     init (): any {
-        this.clonefragment(this.ele)
+        this.clonefragment()
     }
 
     // 将DOM拷贝到虚拟文档
-    clonefragment (ele: Node): any {
+    clonefragment (): any {
         let childrens = this.ele.children
         Array.prototype.slice.call(childrens).forEach(children => {
             this.fragment.appendChild(children)
@@ -96,10 +98,8 @@ class Compile {
     }
 
     // 替换text
-    replaceText (node: Text, reg: string) {
-        
-        console.log('666',node, reg, node.textContent)
-        // console.log(text.split('.').indexOf('()'))
+    replaceText (node: any, reg: string) {
+        node.parentNode.innerText = this.getData(this.$mvc.data, reg)
     }
 
     // 指令编译
@@ -109,54 +109,119 @@ class Compile {
             let self = this
             // 规则 v-ssss
             if (/[v\-]{2}/.test(attr.name)) {
-                console.log(attr.name,attr.value)
-                if (/[v\-on\:]{5}/.test(attr.name)) {
+                if (/[v\-on\:]{5}/.test(attr.name)) {  // v-on:click
                     let method = self.$mvc.methods[attr.value]
                     node.addEventListener(attr.name.slice(5), method.bind(self.$mvc), false)
                 } else {
-                    let res = self.$mvc.data[attr.value]
-                    switch (attr.name.slice(2)) {
-                        case 'html' :
-                        node.innerHTML = res
-                    }
+                    if (attr.value === '') return;
+                    this[attr.name.slice(2)] && this[attr.name.slice(2)](node, this.getData(this.$mvc.data, attr.value), attr.value)
                 }
+                node.removeAttribute(attr.name) // 删除自定义
             } 
-            // 规则 事件指令@click / v-on:click
+            // 规则 事件指令@click
             else if (/[\@]/.test(attr.name)) {
                 let method = self.$mvc.methods[attr.value]
                 node.addEventListener(attr.name.slice(1), method.bind(self.$mvc), false)
+                node.removeAttribute(attr.name) // 删除自定义
             }
         })
 
     }
- 
+
+    // 根据路径查找数据
+    getData(data: Object, path: string) {
+        let router = path.split(".")
+        router.forEach ( (item, index) => {
+            let p
+            p = router[index]
+            if (data[p]) {
+                data = data[p]
+            }
+        })
+        return data
+    }
+
+    // 修改数据
+    setData(data: Object, path: string, newVal: any) {
+        let router = path.split(".")
+        router.forEach ( (item, index) => {
+            let p
+            p = router[index]
+            if (index < router.length -1) {
+                data = data[p]
+            } else {
+                data[p] = newVal // 找到最后一个路径修改值
+            }
+        })
+    }
+       
+
+    // 指令集合
+    html (node: any, res: string) {
+        node.innerHTML = res
+    }
+    
+    text (node: any, res: string) {
+        node.innerText = res
+    }
+
+    model (node: any, res: string, path: string) {
+        node.value = res
+        node.addEventListener('input', e => { // 监听改变
+            this.setData(this.$mvc.data, path, e.target.value)
+            console.log(this)
+        }, false)  
+        
+       
+        // new Watcher(this.$mvc, res)
+    }
+
+    // ...
+
 }
 
 
-// 消息订阅者 watcher
-class watcher {
-    constructor () {
+// 订阅者 watcher
+class Watcher {
+    $mvc: any
+    constructor ($mvc: any) {
+        this.$mvc = $mvc
+    }
+
+    // 添加当前到消息订阅者
+    // get () {
+    //     let dep = new Dep()
+    //     dep.target = this
+    //     // var value = this.$mvc.data[]
+    // }
+
+    update () {
 
     }
 }
 
 
-// 管理改变集合
+// 消息订阅器
 class Dep {
     subs: any[]
     target: any
     constructor () {
-        //改变的数据集合
+        //用来收集订阅者
         this.subs = []
+        this.target = null
     }
 
     //添加改变的数据
     addSub (sub: any) {
         this.subs.push(sub)
+        console.log(this.subs)
     }
 
     //通知订阅者数据发生变化
-    notify(newVal) {
-
+    notify() {
+        this.subs.forEach(function(sub) {
+            sub.update()  // 触发Watcher的update
+            console.log(sub)
+        });
     }
 }

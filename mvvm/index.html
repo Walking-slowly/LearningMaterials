@@ -9,13 +9,15 @@
 <body>
     <div id="app">
         <p v-sss="nb">{{    bbb.aaa}}</p>
-        <p>{{sss}}</p>
+        <p v-html="aaa"></p>
         <div v-bbb>
             <p v-sss="nb">
                 <i>{{aaa}}</i>
             </p>
             <button @click="dianji">你好</button>
         </div>
+        <input v-model="int.text"/>
+        <p>{{int.text}}</p>
     </div>
     <script src="./mvc.js"></script>
     <script>
@@ -24,12 +26,20 @@
             data: {
                 sss: '666',
                 bbb: {
-                    aaa: 'sss'
-                }
+                    aaa: '3434324sss'
+                },
+                aaa: '9999',
+                int: {
+                    text: '输入框'
+                },
+                nb: 'bbb'
+               
             },
             methods: {
                 dianji () {
-                    console.log(777)
+                    this.data.int.text = '啊啊啊'
+                    console.log(this.data.int.text)
+                    
                 }
             }
         })
