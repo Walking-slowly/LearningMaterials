@@ -1,3 +1,4 @@
+var target = null; // 声明一个全局容器，用来存放watcher
 // mvvm 入口函数
 var Mvc = /** @class */ (function () {
     function Mvc(mvnData) {
@@ -21,6 +22,7 @@ var Observer = /** @class */ (function () {
             this.defineProprety(this.datas, key, this.datas[key]);
         }
     };
+    // 给每一个子属性绑定set/get
     Observer.prototype.defineProprety = function (data, key, val) {
         new Observer(val).init(); // 遍历子属性
         var dep = new Dep();
@@ -28,14 +30,16 @@ var Observer = /** @class */ (function () {
         key, // 属性名
         {
             enumerable: true,
-            get: function () {
-                console.log('get');
-                return val;
-            },
+            // configurable: true,
             set: function (newVal) {
-                console.log('666', val, newVal);
+                console.log('set', val, newVal);
                 val = newVal; // 当属性被修改时触发
-                // dep.notify() // 通知订阅者
+                dep.notify(); // 数据变化通知所有订阅者
+            },
+            get: function () {
+                console.log('get', target);
+                target && dep.addSub(target); // 订阅者初始化添加自己到消息订阅器中
+                return val;
             }
         } // 属性描述符 -- 存取描述符
         );
@@ -81,7 +85,7 @@ var Compile = /** @class */ (function () {
     };
     // 替换text
     Compile.prototype.replaceText = function (node, reg) {
-        node.parentNode.innerText = this.getData(this.$mvc.data, reg);
+        node.parentNode.innerText = this.$mvc.data[reg];
     };
     // 指令编译
     Compile.prototype.replaceCompile = function (node) {
@@ -98,7 +102,7 @@ var Compile = /** @class */ (function () {
                 else {
                     if (attr.value === '')
                         return;
-                    _this[attr.name.slice(2)] && _this[attr.name.slice(2)](node, _this.getData(_this.$mvc.data, attr.value), attr.value);
+                    _this[attr.name.slice(2)] && _this[attr.name.slice(2)](node, _this.$mvc.data[attr.value], attr.value);
                 }
                 node.removeAttribute(attr.name); // 删除自定义
             }
@@ -110,32 +114,6 @@ var Compile = /** @class */ (function () {
             }
         });
     };
-    // 根据路径查找数据
-    Compile.prototype.getData = function (data, path) {
-        var router = path.split(".");
-        router.forEach(function (item, index) {
-            var p;
-            p = router[index];
-            if (data[p]) {
-                data = data[p];
-            }
-        });
-        return data;
-    };
-    // 修改数据
-    Compile.prototype.setData = function (data, path, newVal) {
-        var router = path.split(".");
-        router.forEach(function (item, index) {
-            var p;
-            p = router[index];
-            if (index < router.length - 1) {
-                data = data[p];
-            }
-            else {
-                data[p] = newVal; // 找到最后一个路径修改值
-            }
-        });
-    };
     // 指令集合
     Compile.prototype.html = function (node, res) {
         node.innerHTML = res;
@@ -144,49 +122,66 @@ var Compile = /** @class */ (function () {
         node.innerText = res;
     };
     Compile.prototype.model = function (node, res, path) {
-        var _this = this;
+        var self = this;
         node.value = res;
         node.addEventListener('input', function (e) {
-            _this.setData(_this.$mvc.data, path, e.target.value);
-            console.log(_this.$mvc);
+            self.$mvc.data[path] = e.target.value; // 触发该属性的set/get
         }, false);
-        // new Watcher(this.$mvc, res)
+        new Watcher(self.$mvc, res, path, function (value, newVal) {
+            node.value = value;
+            console.log('1111', value, newVal);
+        }); // 执行初始化
     };
     return Compile;
 }());
 // 订阅者 watcher
 var Watcher = /** @class */ (function () {
-    function Watcher($mvc) {
-        this.$mvc = $mvc;
+    function Watcher(vm, exp, path, cb) {
+        this.cb = cb; // 更新视图函数
+        this.vm = vm;
+        this.exp = exp;
+        this.path = path;
+        this.value = this.get(); // 初始化添加自己到消息订阅器中
     }
-    // 添加当前到消息订阅者
-    // get () {
-    //     let dep = new Dep()
-    //     dep.target = this
-    //     // var value = this.$mvc.data[]
-    // }
     Watcher.prototype.update = function () {
+        this.run();
+    };
+    Watcher.prototype.run = function () {
+        var value = this.exp; // 得到修改后的属性值
+        var oldVal = this.value; // 得到初始化时的属性值
+        if (value !== oldVal) { // 属性值修改后 触发更新视图
+            this.value = value;
+            this.cb.call(this.vm, value, oldVal);
+        }
+    };
+    Watcher.prototype.get = function () {
+        target = this; // 存放当前wachter
+        // console.log(dep)
+        // 访问当前属性，触发属性get ，从而添加订阅者到订阅器中
+        console.log(this, this.path, this.vm.$mvc.data[this.path]);
+        var value = this.vm.$mvc.data[this.path];
+        target = null; // 添加完订阅者重置
+        return value;
     };
     return Watcher;
 }());
-// 消息订阅器
+/* 消息订阅器  负责收集订阅者*/
 var Dep = /** @class */ (function () {
     function Dep() {
         //用来收集订阅者
         this.subs = [];
-        this.target = null;
     }
     //添加改变的数据
     Dep.prototype.addSub = function (sub) {
-        this.subs.push(sub);
+        this.subs.push(sub); // 添加对应的订阅者
         console.log(this.subs);
     };
     //通知订阅者数据发生变化
     Dep.prototype.notify = function () {
         this.subs.forEach(function (sub) {
-            sub.update(); // 触发Watcher的update
-            console.log(sub);
+            sub.update(); // 触发对应订阅者的update 更新函数
         });
+        console.log(this.subs);
     };
     return Dep;
 }());

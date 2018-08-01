@@ -4,6 +4,7 @@ interface MvnData {
     methods?: Object 
 }
 
+var target = null // 声明一个全局容器，用来存放watcher
 // mvvm 入口函数
 class Mvc {
     $mvc: any
@@ -32,6 +33,7 @@ class Observer {
         }
     }
 
+    // 给每一个子属性绑定set/get
     defineProprety (data: Object, key: string, val: any): any {
         new Observer(val).init() // 遍历子属性
         let dep = new Dep()
@@ -39,15 +41,17 @@ class Observer {
             data, // 对象
             key, // 属性名
             {
-                enumerable: true, // 可枚举属性 允许修改
-                get : function (): any{ // 属性被访问是触发
-                    console.log('get')
-                    return val
-                },
-                set: function (newVal: any) {
-                    console.log('666',val, newVal)
+                enumerable: true, // 可枚举属性 允许修改 
+                // configurable: true,
+                set:  (newVal: any) => {
+                    console.log('set',val, newVal)
                     val = newVal  // 当属性被修改时触发
-                    // dep.notify() // 通知订阅者
+                    dep.notify() // 数据变化通知所有订阅者
+                },
+                get :  (): any => { // 属性被访问是触发
+                    console.log('get',target)
+                    target && dep.addSub(target) // 订阅者初始化添加自己到消息订阅器中
+                    return val
                 }
             } // 属性描述符 -- 存取描述符
         )
@@ -99,7 +103,7 @@ class Compile {
 
     // 替换text
     replaceText (node: any, reg: string) {
-        node.parentNode.innerText = this.getData(this.$mvc.data, reg)
+        node.parentNode.innerText = this.$mvc.data[reg]
     }
 
     // 指令编译
@@ -114,7 +118,7 @@ class Compile {
                     node.addEventListener(attr.name.slice(5), method.bind(self.$mvc), false)
                 } else {
                     if (attr.value === '') return;
-                    this[attr.name.slice(2)] && this[attr.name.slice(2)](node, this.getData(this.$mvc.data, attr.value), attr.value)
+                    this[attr.name.slice(2)] && this[attr.name.slice(2)](node, this.$mvc.data[attr.value], attr.value)
                 }
                 node.removeAttribute(attr.name) // 删除自定义
             } 
@@ -128,34 +132,6 @@ class Compile {
 
     }
 
-    // 根据路径查找数据
-    getData(data: Object, path: string) {
-        let router = path.split(".")
-        router.forEach ( (item, index) => {
-            let p
-            p = router[index]
-            if (data[p]) {
-                data = data[p]
-            }
-        })
-        return data
-    }
-
-    // 修改数据
-    setData(data: Object, path: string, newVal: any) {
-        let router = path.split(".")
-        router.forEach ( (item, index) => {
-            let p
-            p = router[index]
-            if (index < router.length -1) {
-                data = data[p]
-            } else {
-                data[p] = newVal // 找到最后一个路径修改值
-            }
-        })
-    }
-       
-
     // 指令集合
     html (node: any, res: string) {
         node.innerHTML = res
@@ -166,14 +142,15 @@ class Compile {
     }
 
     model (node: any, res: string, path: string) {
+        let self = this
         node.value = res
         node.addEventListener('input', e => { // 监听改变
-            this.setData(this.$mvc.data, path, e.target.value)
-            console.log(this)
+           self.$mvc.data[path] = e.target.value // 触发该属性的set/get
         }, false)  
-        
-       
-        // new Watcher(this.$mvc, res)
+        new Watcher(self.$mvc, res, path, function (value, newVal) {
+            node.value = value
+            console.log('1111', value,newVal )
+        }) // 执行初始化
     }
 
     // ...
@@ -183,45 +160,63 @@ class Compile {
 
 // 订阅者 watcher
 class Watcher {
-    $mvc: any
-    constructor ($mvc: any) {
-        this.$mvc = $mvc
+    vm: any
+    cb: Function
+    exp: any
+    value: string
+    path: string
+    constructor(vm, exp, path, cb) {
+        this.cb = cb // 更新视图函数
+        this.vm = vm
+        this.exp = exp
+        this.path = path
+        this.value = this.get() // 初始化添加自己到消息订阅器中
     }
 
-    // 添加当前到消息订阅者
-    // get () {
-    //     let dep = new Dep()
-    //     dep.target = this
-    //     // var value = this.$mvc.data[]
-    // }
-
-    update () {
-
+    update () { // 数据修改执行
+        this.run()
+    }
+    run () {
+        let value = this.exp // 得到修改后的属性值
+        var oldVal = this.value // 得到初始化时的属性值
+        if (value !== oldVal) { // 属性值修改后 触发更新视图
+            this.value = value
+            this.cb.call(this.vm, value, oldVal)
+        }
+    }
+    get () { // 初始化执行
+        target = this // 存放当前wachter
+        // console.log(dep)
+        // 访问当前属性，触发属性get ，从而添加订阅者到订阅器中
+        console.log(this, this.path, this.vm.$mvc.data[this.path])
+        const value =  this.vm.$mvc.data[this.path]
+        target = null  // 添加完订阅者重置
+      
+        return value
     }
 }
 
-
-// 消息订阅器
+/* 消息订阅器  负责收集订阅者*/
 class Dep {
     subs: any[]
-    target: any
     constructor () {
         //用来收集订阅者
         this.subs = []
-        this.target = null
     }
 
     //添加改变的数据
     addSub (sub: any) {
-        this.subs.push(sub)
+        this.subs.push(sub) // 添加对应的订阅者
         console.log(this.subs)
     }
 
     //通知订阅者数据发生变化
     notify() {
         this.subs.forEach(function(sub) {
-            sub.update()  // 触发Watcher的update
-            console.log(sub)
-        });
+            sub.update()  // 触发对应订阅者的update 更新函数
+           
+        })
+        console.log(this.subs)
     }
 }
+
