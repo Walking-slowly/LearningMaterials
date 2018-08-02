@@ -5,8 +5,8 @@ var Mvc = /** @class */ (function () {
         this.$mvc = this;
         this.data = mvnData.data;
         this.methods = mvnData.methods;
-        new Compile(this.$mvc, mvnData.el).init();
         new Observer(mvnData.data).init();
+        new Compile(this.$mvc, mvnData.el).init();
     }
     return Mvc;
 }());
@@ -85,7 +85,11 @@ var Compile = /** @class */ (function () {
     };
     // 替换text
     Compile.prototype.replaceText = function (node, reg) {
-        node.parentNode.innerText = this.$mvc.data[reg];
+        node.textContent = this.$mvc.data[reg];
+        new Watcher(this.$mvc, this.$mvc.data[reg], reg, function (value) {
+            node.textContent = value;
+            console.log('222', value);
+        });
     };
     // 指令编译
     Compile.prototype.replaceCompile = function (node) {
@@ -127,9 +131,9 @@ var Compile = /** @class */ (function () {
         node.addEventListener('input', function (e) {
             self.$mvc.data[path] = e.target.value; // 触发该属性的set/get
         }, false);
-        new Watcher(self.$mvc, res, path, function (value, newVal) {
+        new Watcher(self.$mvc, res, path, function (value) {
             node.value = value;
-            console.log('1111', value, newVal);
+            console.log('111', value);
         }); // 执行初始化
     };
     return Compile;
@@ -147,18 +151,18 @@ var Watcher = /** @class */ (function () {
         this.run();
     };
     Watcher.prototype.run = function () {
-        var value = this.exp; // 得到修改后的属性值
+        var value = this.vm.$mvc.data[this.path]; // 得到修改后的属性值
         var oldVal = this.value; // 得到初始化时的属性值
+        console.log('run', value, oldVal, this.exp);
         if (value !== oldVal) { // 属性值修改后 触发更新视图
             this.value = value;
-            this.cb.call(this.vm, value, oldVal);
+            this.cb.call(this.vm, value);
         }
     };
     Watcher.prototype.get = function () {
         target = this; // 存放当前wachter
         // console.log(dep)
         // 访问当前属性，触发属性get ，从而添加订阅者到订阅器中
-        console.log(this, this.path, this.vm.$mvc.data[this.path]);
         var value = this.vm.$mvc.data[this.path];
         target = null; // 添加完订阅者重置
         return value;
@@ -180,6 +184,7 @@ var Dep = /** @class */ (function () {
     Dep.prototype.notify = function () {
         this.subs.forEach(function (sub) {
             sub.update(); // 触发对应订阅者的update 更新函数
+            console.log(sub);
         });
         console.log(this.subs);
     };
