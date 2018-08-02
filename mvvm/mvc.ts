@@ -153,7 +153,6 @@ class Compile {
         }, false)  
         new Watcher(self.$mvc, res, path, function (value) {
             node.value = value
-            console.log('111',value)
         }) // 执行初始化
     }
 
@@ -183,7 +182,6 @@ class Watcher {
     run () {
         let value = this.vm.$mvc.data[this.path] // 得到修改后的属性值
         var oldVal = this.value // 得到初始化时的属性值
-        console.log('run', value, oldVal, this.exp)
         if (value !== oldVal) { // 属性值修改后 触发更新视图
             this.value = value
             this.cb.call(this.vm, value)
