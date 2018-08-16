@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>时钟</title>
+    <style>
+        body {
+            padding: 0;
+            margin: 0;
+            background-color: rgba(0, 0, 0, 0.1)
+        }
+
+        canvas {
+            display: block;
+            margin: 200px auto;
+        }
+    </style>
+</head>
+<body>
+<canvas id="solar" width="300" height="300"></canvas>
+<script>
+    class draw {
+        constructor () {
+        }
+
+        init () {
+            let canvas = document.querySelector("#solar") // 获取画布
+            let ctx = canvas.getContext("2d") // 获取canvas上下文对象
+            let self = this
+            requestAnimationFrame(function step(){ // 开始动画
+                self.drawDial(ctx); //绘制表盘
+                self.drawAllHands(ctx); //绘制时分秒针
+                requestAnimationFrame(step); // 每次1秒递归调用step回调
+            });
+        }
+
+        // 绘制表盘
+        drawDial (ctx) {
+            ctx.clearRect(0, 0, 300, 300) // 绘制前先清空所有内容
+            ctx.save() // 存储记录
+            ctx.translate(150, 150) // 平移到画布中心
+            // 外圆
+            ctx.beginPath() // 开始绘画路径
+            // 画圆
+            ctx.arc(
+                0,0, // 圆心坐标
+                148, // 圆的半径
+                0, // 起始角
+                2 * Math.PI // 结束角360
+            )
+            ctx.lineWidth = 3 // 线的宽度
+            ctx.strokeStyle = '#5e5e5e' // 线的颜色
+            ctx.stroke() // 使用线性绘制 
+            ctx.closePath() // 闭合路径
+            
+            // 内圆
+            ctx.beginPath()
+            ctx.arc( 0,0, 136, 0, 2 * Math.PI)
+            ctx.lineWidth = 1 
+            ctx.strokeStyle = '#B7B7B7'
+            ctx.stroke() 
+            ctx.closePath()
+
+            // 绘制字体
+            let scale = [3,4,5,6,7,8,9,10,11,12,1,2]
+            scale.forEach(function(num,i){
+                var rad = 2 * Math.PI / 12 * i;
+                var x = Math.cos(rad) * (148 - 30);
+                var y = Math.sin(rad) * (148 - 30);
+                ctx.font = "18px sans-serif"
+                ctx.textAlign = "center";
+                ctx.textBaseline = "middle";
+                ctx.fillText(num, x, y);
+            })
+            let now = new Date(),
+                s = now.getSeconds()
+            // 绘制刻度
+            for (let i = 0; i < 60; i++) {
+                ctx.save()
+                ctx.rotate(i*(2 * Math.PI / 60)- (2 * Math.PI / 4)) // 根据旋转相应度数
+                ctx.beginPath()
+                i % 5 
+                  ? ctx.arc( 136,0, 2, 0, 2 * Math.PI)
+                  : ctx.arc( 136,0, 3, 0, 2 * Math.PI)
+                ctx.lineWidth = 1 
+                if (i == s) {
+                  ctx.fillStyle = 'yellow' // 填充色 
+                  ctx.arc( 136,0, 4, 0, 2 * Math.PI) // 当前放大
+                } else {ctx.fillStyle = '#b7b7b7'}  
+                ctx.stroke()
+                ctx.closePath()
+                ctx.fill() // 填充
+                ctx.restore()
+            } 
+            ctx.restore()  // 取出记录
+        }
+
+        // 绘制时，分，秒
+        drawAllHands (ctx) {
+            // 获取当前时间，根据当前时候定义时，分，秒
+            let now = new Date()
+            let h = now.getHours(),
+                m = now.getMinutes(),
+                s = now.getSeconds()
+            /* 圆360，秒针每秒转动3，先获取对应针的弧度，然后根据弧度获取度数  圆的弧度2*Math.PI */
+            let sRadian = 2 * Math.PI / 60 * s , // 秒针圆弧
+                mRadian = 2 * Math.PI / 60 * m + (sRadian / 60), // 分针弧度
+                hRadian = 2 * Math.PI / 12 * h + (mRadian / 60) // 时针弧度
+                // console.log(hRadian, h)
+                this.drawHand(ctx, sRadian, 106, 2, 'green') // 秒针
+                this.drawHand(ctx, mRadian, 80, 4, 'red') // 分针
+                this.drawHand(ctx, hRadian, 60, 6, '#000000') // 时针
+        }
+
+        // 构建指针 
+        
+        drawHand (ctx, radian, length, width, color) {
+            ctx.save()
+            ctx.translate(150, 150) // 移动坐标到圆的中心
+            ctx.rotate( radian - (2 * Math.PI / 4)) 
+            ctx.beginPath()
+            ctx.moveTo(0, 0)
+            ctx.lineTo(length, 0)  // 沿着x轴绘制针
+            ctx.lineWidth = width
+            ctx.strokeStyle = color
+            ctx.stroke()
+            ctx.closePath()
+
+            // 画圆心
+            ctx.beginPath()
+            ctx.arc( 0,0, 4, 0, 2 * Math.PI)
+            ctx.lineWidth = 1 
+            ctx.fillStyle = '#fff'
+            ctx.stroke()
+            ctx.fill()
+            ctx.closePath()
+
+            ctx.restore()
+        }
+
+    }
+    new draw().init()
+</script>
+</body>
+</html>

@@ -133,7 +133,6 @@ class Compile {
                 node.removeAttribute(attr.name) // 删除自定义
             }
         })
-
     }
 
     // 指令集合
