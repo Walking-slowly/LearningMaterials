@@ -1,6 +1,6 @@
 # LearningMaterials
 
-#### [gulp搭建编译模板](https://github.com/LY-Lucas/LearningMaterials/tree/master/gulp)
+#### [gulp搭建打包工具](https://github.com/LY-Lucas/LearningMaterials/tree/master/gulp)
 
-#### [webpack](https://github.com/LY-Lucas/LearningMaterials/tree/master/webpack)
+#### [webpack搭建打包工具](https://github.com/LY-Lucas/LearningMaterials/tree/master/webpack)
 
