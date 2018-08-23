@@ -31,7 +31,7 @@
   > 304 Not Modified 是浏览器和服务器多确认了一次缓存有效性，再用的缓存
 
   ```js
-    app.use(express.static(path.join(__dirname, '需要缓存的静态文件夹地址'),{
+    app.use(express.static(path.join(__dirname, '缓存的静态文件夹地址'),{
         maxAge: '1y',  // 文件过期时间
         expires: '1y', // 文件过期时间
     }))
