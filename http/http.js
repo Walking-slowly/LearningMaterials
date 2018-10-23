@@ -13,9 +13,9 @@ class Request {
         let res
         if (parmas == {}) return res = ''
         for (var key in parmas) {
-            res += key + '=' + parmas[key]
+            res += key + '=' + parmas[key]+ '&'
         }
-        return res
+        return res.substring(0,res.length-1)
     }
 
     xmlHttp () {
