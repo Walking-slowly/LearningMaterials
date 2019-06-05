@@ -9,21 +9,15 @@
 <body>
     <script>
         var name = "The Window";
-
     　　var object = {
     　　　　name : "My Object",
 
     　　　　getNameFunc : function(){
-                // console.log(this)
-    　　　　　　var bbb = function(){
-                //   console.log(this)
+    　　　　　　return function(){
     　　　　　　　　return this.name;
     　　　　　　};
-                return bbb
     　　　　}
-
     　　};
-
     　　alert(object.getNameFunc()());
     </script>
 </body>

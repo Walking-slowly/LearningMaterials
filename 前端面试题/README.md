@@ -107,5 +107,44 @@
 
     var c = a();
     c() // 1
+
+    var name = "The Window";
+　　var object = {
+　　　　name : "My Object",
+
+　　　　getNameFunc : function(){
+            // 这里的this 是指向object
+　　　　　　return function(){
+            // 这里的this 是指向Window
+　　　　　　　　return this.name;
+　　　　　　};
+　　　　}
+　　};
+　　console.log(object.getNameFunc()()); // The Window
 ```
 > 由于闭包的特性造成数据一直被引用不被清掉，所以一直占用内存，会很消耗内存
+
+### DOM操作
+##### 删除
+```js
+    parent.removeChild(childNode)
+```
+##### 替换
+```js
+    parent.replaceChild(newnode, oldnode)
+```
+##### 复制
+```js
+    node.cloneNode(true|false) // true/false 深复制/浅复制
+```
+##### 添加
+
+```js
+    parent.appendChild(node) // 在后面插入
+    parent.insetBefore('要插入的节点', '参照节点') // 参照节点没有则插入最后
+```
+##### 创建
+
+```js
+    document.createElement('标签名')
+```
