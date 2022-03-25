@@ -77,7 +77,7 @@ export default {
 
   props: {
     // {
-    //   type: 'input',
+    //   type: 'input', elementui 输入框类型，支持自定义custom类型，支持slot插槽
     //   span: 12,
     //   prop: 'a',
     //   label: '输入框',
