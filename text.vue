@@ -82,14 +82,15 @@ export default {
     //   prop: 'a',
     //   label: '输入框',
     //   rules: [{ required: true, message: '请输入', trigger: 'blur' }],
-    //   props: {}, // 输入框属性 --> elmentui
-    //   events: {}, // 输入框事件 --> elementui
+    //   props: {}, // 输入框属性 --> elmentui属性集成
+    //   events: {}, // 输入框事件 --> elementui事件集成
     // }
     cols: {
       type: Array,
       required: true
     },
-
+    
+    // elementui form组件属性集成
     formProps: {
       type: Object,
       default: () => { return {} }
