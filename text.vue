@@ -77,20 +77,19 @@ export default {
 
   props: {
     // {
-    //   type: 'input', elementui 输入框类型，支持自定义custom类型，支持slot插槽
+    //   type: 'input',
     //   span: 12,
     //   prop: 'a',
     //   label: '输入框',
     //   rules: [{ required: true, message: '请输入', trigger: 'blur' }],
-    //   props: {}, // 输入框属性 --> elmentui属性集成
-    //   events: {}, // 输入框事件 --> elementui事件集成
+    //   props: {}, // 输入框属性 --> elmentui
+    //   events: {}, // 输入框事件 --> elementui
     // }
     cols: {
       type: Array,
       required: true
     },
-    
-    // elementui form组件属性集成
+
     formProps: {
       type: Object,
       default: () => { return {} }
@@ -112,9 +111,9 @@ export default {
 
   provide() {
     return {
-      watchFile: this.watchFile,
-      getFileValue: this.getFileValue,
-      updateFile: this.updateFile
+      watchField: this.watchField,
+      getFieldValue: this.getFieldValue,
+      updateField: this.updateField
     }
   },
 
@@ -160,15 +159,15 @@ export default {
       this.$refs.CommonForm.resetFields()
     },
 
-    watchFile(file, cb, obj = {}) {
+    watchField(file, cb, obj = {}) {
       return this.$watch(`model.${file}`, cb, obj)
     },
 
-    getFileValue(file) {
+    getFieldValue(file) {
       return this.$refs[file] && this.$refs[file][0].value
     },
 
-    updateFile(file, obj = {}) {
+    updateField(file, obj = {}) {
       const i = this.formCols.findIndex(i => i.prop === file)
       const defaultProps = this.formCols[i].props || {}
       this.$set(this.formCols[i], 'props', { ...defaultProps, ...obj })
